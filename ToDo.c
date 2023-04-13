@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define MAX 100
+#define MAX 150
 
 typedef struct Tarea
 {
@@ -14,10 +14,11 @@ typedef struct Tarea
 }sTAREA;
 
 
+
 int main (){
     char buffer[MAX];
-    int cantTareas;
-    printf ("\nCuantas tareas va a cargar?");
+    int cantTareas,duracion;
+    printf ("\nCuantas tareas va a cargar?\n");
     scanf("%d", &cantTareas);
 
     sTAREA ** tareasPendientes;
@@ -32,6 +33,24 @@ int main (){
         tareasPendientes[i] = NULL;
         tareasRealizadas[i] = NULL;
     }
+    int i = 0;
+    printf("\n====A Continuacion va a cargar las Tareas Pendientes==== ");
+    for (int i = 0; i < cantTareas; i++)
+    {
+        //sacarla en una función
+        tareasPendientes[i] = (sTAREA *) malloc(sizeof(sTAREA) * 1);
+        tareasPendientes[i]->TareaID = i;
+        fflush(stdin);
+        printf("\nIngerese una descrpicion de la tarea (MAX %d): ",MAX);
+        gets(buffer);
+        tareasPendientes[i]->Descripcion = (char *) malloc(sizeof(char) * strlen(buffer)+1);
+        strcpy(tareasPendientes[i]->Descripcion, buffer);
+        printf("\nIngrese lo que se va a tardar en realizar la tarea (duracion): ");
+        fflush(stdin);
+        scanf("%d", &tareasPendientes[i]->Duracion);
+    }
     
+    free(tareasPendientes);
+    free(tareasRealizadas);
     return 0;
 }
