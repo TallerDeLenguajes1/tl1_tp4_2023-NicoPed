@@ -50,6 +50,20 @@ int main (){
         scanf("%d", &tareasPendientes[i]->Duracion);
     }
     
+    //LISTAR LAS TAREAS UNA A UNA 
+
+    int resp;
+    for (int i = 0; i < cantTareas; i++)
+    {
+
+        printf("\n===TAREA %d ===",i);
+        //EN busxar fijarse si no esta en NULL si no se rompe
+        puts (tareasPendientes[i]->Descripcion); 
+        printf("\nRealizo esta tarea? 1 = SI 0 = NO");;    
+        scanf("%d",&resp);
+    }
+    
+
     free(tareasPendientes);
     free(tareasRealizadas);
     return 0;
