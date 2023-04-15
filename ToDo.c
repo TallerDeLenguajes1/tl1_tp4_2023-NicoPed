@@ -83,14 +83,16 @@ int main (){
     }
     
     //MOSTRAR POR PANTALLA LAS TAREAS REALIZADAS Y LISTAR PENDIENTES
-  /*
+
     printf("\n==== Tareas Realizadas ====");
     mostrarTodasLasTareas(tareasRealizadas,cantTareas);
 
     printf("\n==== Tareas Pendientes ====");
     mostrarTodasLasTareas(tareasPendientes,cantTareas);
-*/
+
     printf("\n==============================================");
+    
+    // BUSQUEDA
     sTAREA * busqueda = NULL;
     int id;
     char *clave; 
