@@ -19,6 +19,8 @@ void mostrarTodasLasTareas(sTAREA** t, int cantidad);
 
 sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas);
 
+sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas);
+
 int main (){
     char buffer[MAX];
     int cantTareas,duracion;
@@ -44,6 +46,7 @@ int main (){
     for (int i = 0; i < cantTareas; i++)
     {
         //sacarla en una función
+        printf("\n=== CARGAR TAREA %d ===",i);
         tareasPendientes[i] = (sTAREA *) malloc(sizeof(sTAREA) * 1);
         tareasPendientes[i]->TareaID = i;
         fflush(stdin);
@@ -89,7 +92,8 @@ int main (){
 */
     sTAREA * busqueda;
     int id = 8;
-    busqueda = BuscarTareaID(tareasPendientes,tareasRealizadas,id,cantTareas); 
+    char clave [] = "Nico"; 
+    busqueda = BuscarTareaClave(tareasPendientes,tareasRealizadas,clave,cantTareas); 
     //EN busxar fijarse si no esta en NULL si no se rompe
     if (busqueda != NULL)
     {
@@ -106,7 +110,24 @@ int main (){
     free(tareasRealizadas);
     return 0;
 }
+sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas){
 
+    if (tareasPend != NULL && tareasReal != NULL)
+    {
+        for (int i = 0; i < cantTareas; i++)
+        {
+            if (tareasPend[i] != NULL && strstr(tareasPend[i]->Descripcion, clave) != NULL)
+            {
+                return(tareasPend[i]);
+            }
+            else if (tareasReal[i] != NULL && strstr(tareasReal[i]->Descripcion, clave) != NULL)
+            {
+                return(tareasReal[i]);
+            }            
+        }
+    }
+    return (NULL);
+}
 sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas){
 
     if (tareasPend != NULL && tareasReal != NULL)
