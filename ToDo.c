@@ -13,7 +13,11 @@ typedef struct Tarea
 
 }sTAREA;
 
+void mostrarTarea(sTAREA* t);
 
+void mostrarTodasLasTareas(sTAREA** t, int cantidad);
+
+sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas);
 
 int main (){
     char buffer[MAX];
@@ -33,7 +37,9 @@ int main (){
         tareasPendientes[i] = NULL;
         tareasRealizadas[i] = NULL;
     }
+    
     int i = 0;
+    
     printf("\n====A Continuacion va a cargar las Tareas Pendientes==== ");
     for (int i = 0; i < cantTareas; i++)
     {
@@ -55,16 +61,92 @@ int main (){
     int resp;
     for (int i = 0; i < cantTareas; i++)
     {
-
+        
         printf("\n===TAREA %d ===",i);
-        //EN busxar fijarse si no esta en NULL si no se rompe
-        puts (tareasPendientes[i]->Descripcion); 
-        printf("\nRealizo esta tarea? 1 = SI 0 = NO");;    
+        mostrarTarea (tareasPendientes[i]);
+        printf("\n===============================");
+        do
+        {
+        printf("\nRealizo esta tarea? 1 = SI 0 = NO: ");;    
+        fflush(stdin);
         scanf("%d",&resp);
+        } while (resp != 1 && resp != 0);
+        if (resp)
+        {
+            tareasRealizadas[i] = tareasPendientes[i];
+            tareasPendientes[i] = NULL;
+        }
+
     }
     
+    //MOSTRAR POR PANTALLA LAS TAREAS REALIZADAS Y LISTAR PENDIENTES
+  /*
+    printf("\n==== Tareas Realizadas ====");
+    mostrarTodasLasTareas(tareasRealizadas,cantTareas);
 
+    printf("\n==== Tareas Pendientes ====");
+    mostrarTodasLasTareas(tareasPendientes,cantTareas);
+*/
+    sTAREA * busqueda;
+    int id = 8;
+    busqueda = BuscarTareaID(tareasPendientes,tareasRealizadas,id,cantTareas); 
+    //EN busxar fijarse si no esta en NULL si no se rompe
+    if (busqueda != NULL)
+    {
+        printf("\n===LA TAREA BUSCADA ES:==== ");
+        mostrarTarea(busqueda);
+    }
+    else
+    {
+        printf("\n===NO HUBO RESULTADOS===");
+    }
+    
+    
     free(tareasPendientes);
     free(tareasRealizadas);
     return 0;
+}
+
+sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas){
+
+    if (tareasPend != NULL && tareasReal != NULL)
+    {
+        
+        for (int i = 0; i < cantTareas; i++)
+        {
+            if (tareasPend[i] != NULL && tareasPend[i]->TareaID == id)
+            {
+                return (tareasPend[i]);
+            }
+            else if (tareasReal[i] != NULL && tareasReal[i]->TareaID == id)
+            {
+                return(tareasReal[i]);
+            }
+        }
+    }
+    return (NULL);
+}
+
+void mostrarTodasLasTareas(sTAREA** t, int cantidad){
+    
+    for (int i = 0; i < cantidad; i++)
+    {
+        if ( t[i] != NULL)
+        {
+            printf("\n=== TAREA %d ===",i);
+            mostrarTarea(t[i]);
+        }
+        
+    }
+    
+
+}
+
+void mostrarTarea(sTAREA* t){
+
+    printf("\nID : %d", t->TareaID);
+    printf("\nDescripción: ");
+    puts(t->Descripcion);
+    printf("\nDuracion: %d",t->Duracion);
+
 }
