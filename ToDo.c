@@ -90,21 +90,51 @@ int main (){
     printf("\n==== Tareas Pendientes ====");
     mostrarTodasLasTareas(tareasPendientes,cantTareas);
 */
-    sTAREA * busqueda;
-    int id = 8;
-    char clave [] = "Nico"; 
-    busqueda = BuscarTareaClave(tareasPendientes,tareasRealizadas,clave,cantTareas); 
-    //EN busxar fijarse si no esta en NULL si no se rompe
-    if (busqueda != NULL)
+    printf("\n==============================================");
+    sTAREA * busqueda = NULL;
+    int id;
+    char *clave; 
+    
+    do
     {
-        printf("\n===LA TAREA BUSCADA ES:==== ");
-        mostrarTarea(busqueda);
-    }
-    else
-    {
-        printf("\n===NO HUBO RESULTADOS===");
+   
+        printf("\n================================");
+        printf("\n1-Buscar Por id ");
+        printf("\n2-Buscar Por Clave");
+        printf("\n3-Salir");
+        printf("\nSeleccione una opcion: ");
+        fflush(stdin);
+        scanf("%d",&resp);
+        switch (resp)
+        {
+        case 1:
+            printf("\nIngrese el id: ");
+            fflush(stdin);
+            scanf("%d",&id);
+            busqueda = BuscarTareaID(tareasPendientes,tareasRealizadas,id,cantTareas);
+            break;
+        case 2:
+            printf("\nIngrese la clave: ");
+            fflush(stdin);
+            gets(buffer);
+            clave = (char *) malloc(sizeof(char) * strlen(buffer) + 1);
+            strcpy(clave,buffer);
+            busqueda = BuscarTareaClave(tareasPendientes,tareasRealizadas,clave,cantTareas);        
+            break;
+        }
+    if ( resp == 1 || resp == 2)
+    {    
+        if (busqueda != NULL)
+        {
+            printf("\n=== LA TAREA BUSCADA ES: ===");
+            mostrarTarea(busqueda);
+        }else
+        {
+            printf("\n===NO HUBO RESULTADOS===");
+        }
     }
     
+    } while (resp != 3);
     
     free(tareasPendientes);
     free(tareasRealizadas);
@@ -168,6 +198,6 @@ void mostrarTarea(sTAREA* t){
     printf("\nID : %d", t->TareaID);
     printf("\nDescripción: ");
     puts(t->Descripcion);
-    printf("\nDuracion: %d",t->Duracion);
+    printf("Duracion: %d",t->Duracion);
 
 }
