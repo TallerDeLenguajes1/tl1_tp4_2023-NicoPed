@@ -13,20 +13,153 @@ typedef struct Tarea
 
 }sTAREA;
 
+typedef struct sNodo{
+    sTAREA T;
+    struct sNodo* Siguiente;
+}sNodo;
+
+sNodo* crearListaVacio();
+
+sNodo* crearNodo(int id, char descipcion[], int duracion);
+
+void insertarNodo(sNodo** cabecera,int id, char descipcion[], int duracion);
+
 void mostrarTarea(sTAREA* t);
 
-void mostrarTodasLasTareas(sTAREA** t, int cantidad);
+//void mostrarTodasLasTareas(sTAREA** t, int cantidad);
 
-sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas);
+//sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas);
 
-sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas);
+//sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas);
 
 int main (){
     char buffer[MAX];
-    int cantTareas,duracion;
-    printf ("\nCuantas tareas va a cargar?\n");
-    scanf("%d", &cantTareas);
+    int cantTareas,duracion,respuesta,id = 0;;
 
+    sNodo* tareasRealizadas; 
+    sNodo* tareaPendientes; 
+    tareasRealizadas = crearListaVacio();
+    tareaPendientes = crearListaVacio();
+    do
+    {
+        printf("\n1- Agregar una tarea pendiente: ");
+        printf("\n2- Ver y Marcar como realizadas las tareas pendientes: ");
+        printf("\n10- Salir");
+        fflush(stdin);
+        printf("\nIngrese una opcion: ");
+        scanf("%d",&respuesta);
+        
+        switch (respuesta)
+        {
+        case 1 :
+            id ++;
+            printf("\nIngrese una descripción para la tarea: ");
+            fflush(stdin);
+            gets(buffer);
+            printf("\nIngrese una duracion(en minutos): ");
+            fflush(stdin);
+            scanf("%d",&duracion);
+            insertarNodo(&tareaPendientes, id, buffer, duracion);
+            break;
+        case 2 :
+            
+            break;
+        }
+
+    } while (respuesta != 10);
+    
+    
+    return 0;
+}
+
+void insertarNodo(sNodo** cabecera,int id, char* descipcion, int duracion){
+    sNodo* nuevoNodo = crearNodo(id,descipcion,duracion);
+    nuevoNodo->Siguiente = *cabecera;
+    *cabecera = nuevoNodo;
+}
+
+sNodo* crearNodo(int id, char descipcion[], int duracion){
+    sNodo* nuevoNodo= (sNodo *) malloc(sizeof(sNodo));
+    nuevoNodo->T.Descripcion = (char *) malloc(sizeof(char) * strlen(descipcion) + 1);
+    strcpy(nuevoNodo->T.Descripcion, descipcion);
+    nuevoNodo->T.Duracion = duracion;
+    nuevoNodo->T.TareaID = id;
+    return nuevoNodo;
+}
+
+sNodo* crearListaVacio(){
+    return NULL;
+}
+void mostrarTarea(sTAREA* t){
+
+    printf("\nID : %d", t->TareaID);
+    printf("\nDescripción: ");
+    puts(t->Descripcion);
+    printf("Duracion: %d",t->Duracion);
+
+}
+
+
+
+/*
+sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas){
+
+    if (tareasPend != NULL && tareasReal != NULL)
+    {
+        for (int i = 0; i < cantTareas; i++)
+        {
+            if (tareasPend[i] != NULL && strstr(tareasPend[i]->Descripcion, clave) != NULL)
+            {
+                return(tareasPend[i]);
+            }
+            else if (tareasReal[i] != NULL && strstr(tareasReal[i]->Descripcion, clave) != NULL)
+            {
+                return(tareasReal[i]);
+            }            
+        }
+    }
+    return (NULL);
+}
+sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas){
+
+    if (tareasPend != NULL && tareasReal != NULL)
+    {
+        
+        for (int i = 0; i < cantTareas; i++)
+        {
+            if (tareasPend[i] != NULL && tareasPend[i]->TareaID == id)
+            {
+                return (tareasPend[i]);
+            }
+            else if (tareasReal[i] != NULL && tareasReal[i]->TareaID == id)
+            {
+                return(tareasReal[i]);
+            }
+        }
+    }
+    return (NULL);
+}
+
+void mostrarTodasLasTareas(sTAREA** t, int cantidad){
+    
+    for (int i = 0; i < cantidad; i++)
+    {
+        if ( t[i] != NULL)
+        {
+            printf("\n=== TAREA %d ===",i);
+            mostrarTarea(t[i]);
+        }
+        
+    }
+    
+
+}
+
+
+*/
+
+/*
+    
     sTAREA ** tareasPendientes;
     sTAREA ** tareasRealizadas;
 
@@ -139,67 +272,4 @@ int main (){
     } while (resp != 3);
     
     free(tareasPendientes);
-    free(tareasRealizadas);
-    return 0;
-}
-sTAREA* BuscarTareaClave(sTAREA ** tareasPend, sTAREA ** tareasReal,char clave[], int cantTareas){
-
-    if (tareasPend != NULL && tareasReal != NULL)
-    {
-        for (int i = 0; i < cantTareas; i++)
-        {
-            if (tareasPend[i] != NULL && strstr(tareasPend[i]->Descripcion, clave) != NULL)
-            {
-                return(tareasPend[i]);
-            }
-            else if (tareasReal[i] != NULL && strstr(tareasReal[i]->Descripcion, clave) != NULL)
-            {
-                return(tareasReal[i]);
-            }            
-        }
-    }
-    return (NULL);
-}
-sTAREA* BuscarTareaID(sTAREA ** tareasPend, sTAREA ** tareasReal,int id, int cantTareas){
-
-    if (tareasPend != NULL && tareasReal != NULL)
-    {
-        
-        for (int i = 0; i < cantTareas; i++)
-        {
-            if (tareasPend[i] != NULL && tareasPend[i]->TareaID == id)
-            {
-                return (tareasPend[i]);
-            }
-            else if (tareasReal[i] != NULL && tareasReal[i]->TareaID == id)
-            {
-                return(tareasReal[i]);
-            }
-        }
-    }
-    return (NULL);
-}
-
-void mostrarTodasLasTareas(sTAREA** t, int cantidad){
-    
-    for (int i = 0; i < cantidad; i++)
-    {
-        if ( t[i] != NULL)
-        {
-            printf("\n=== TAREA %d ===",i);
-            mostrarTarea(t[i]);
-        }
-        
-    }
-    
-
-}
-
-void mostrarTarea(sTAREA* t){
-
-    printf("\nID : %d", t->TareaID);
-    printf("\nDescripción: ");
-    puts(t->Descripcion);
-    printf("Duracion: %d",t->Duracion);
-
-}
+    free(tareasRealizadas);*/
