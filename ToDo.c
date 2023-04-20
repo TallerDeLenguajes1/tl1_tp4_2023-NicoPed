@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+//TP5
+
 #define MAX 150
 
 typedef struct Tarea
@@ -33,10 +35,9 @@ sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]);
 void mostrarTodasLasTareas(sNodo* t);
 int main (){
     char buffer[MAX],*clave;
-    int cantTareas,duracion,respuesta,id = 0, bandera,idBuscar;
+    int cantTareas,duracion,respuesta,id = 0, bandera,idAux;
 
-    sNodo* tareasRealizadas,* auxMostrar,*auxAnterior; 
-    sNodo* tareaPendientes;
+    sNodo* tareasRealizadas,* tareaPendientes,*tareasEnProceso; 
     sNodo* busqueda; 
     tareasRealizadas = crearListaVacio();
     tareaPendientes = crearListaVacio();
@@ -66,31 +67,18 @@ int main (){
             id ++;
             break;
         case 2 :
-            auxMostrar = tareaPendientes;
-            auxAnterior = tareaPendientes;            
-            while (auxMostrar != NULL)
-            {
-                printf("\n==== TAREA: %d ===",auxMostrar->T.TareaID);
-                mostrarTarea(auxMostrar->T);
-                do
-                {
-                    printf("\nRealizo esta tarea? 1 = SI 0 = NO: ");;    
-                    fflush(stdin);
-                    scanf("%d",&respuesta);
-                } while (respuesta != 1 && respuesta != 0);
-                if (respuesta)
-                {
-                    insertarNodo(&tareasRealizadas,auxMostrar->T.TareaID,auxMostrar->T.Descripcion,auxMostrar->T.Duracion);
-                    auxAnterior->Siguiente = auxMostrar->Siguiente;
-                    free(auxMostrar);
-                   
-                }
-                
-                auxAnterior = auxMostrar;
-                auxMostrar = auxMostrar->Siguiente;    
-                
-                
-            }
+            printf("\n=== Tareas Pendienetes ===");
+            mostrarTodasLasTareas(tareaPendientes);
+            printf("\n==========================");
+            printf("\n=== Tareas Realizadas ===");
+            mostrarTodasLasTareas(tareasRealizadas);
+            printf("\n==========================");
+            printf("\n=== Tareas EnProceso ===");
+            mostrarTodasLasTareas(tareasEnProceso);
+            printf("\n==========================");
+            printf("\nIngrese el ID de la tarea a seleccionar: ");
+            scanf("%d",&idAux);
+
             break;
         case 3:
             printf("\n=== Tareas Pendienetes ===");
@@ -105,8 +93,8 @@ int main (){
         case 5:
             printf("\nIngrese el id: ");
             fflush(stdin);
-            scanf("%d",&idBuscar);
-            busqueda = BuscarTareaID(tareaPendientes,tareasRealizadas,idBuscar);
+            scanf("%d",&idAux);
+            busqueda = BuscarTareaID(tareaPendientes,tareasRealizadas,idAux);
             break;
         case 6:
             printf("\nIngrese la clave: ");
@@ -137,6 +125,32 @@ int main (){
     return 0;
 }
 
+void Eliminar(sNodo ** t, int id){
+    sNodo* aux, *auxAnterior;
+    aux = *t;
+    auxAnterior = *t;
+
+    while (aux && aux->T.TareaID != id)
+    {
+        auxAnterior = aux;
+        aux = aux->Siguiente;
+    }
+    if (aux == *t)
+    {
+        *t = aux->Siguiente;
+        free(aux->T.Descripcion);
+        free(aux);    
+    }else{
+        if (aux)
+        {
+            auxAnterior->Siguiente = aux->Siguiente;
+            free(aux->T.Descripcion);
+            free(aux);
+        }
+    }
+
+}
+
 void mostrarTodasLasTareas(sNodo* t){
     sNodo* aux = t;
     while (aux != NULL)
@@ -150,7 +164,8 @@ void mostrarTodasLasTareas(sNodo* t){
 }
 
 sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]){
-
+    // HACER QUE SOLO RECIBA UNA LISTA Y LO BUSQUE DE AHI RECIEN EN EL PROGRAMA
+    //PRINCIPAL HACES EL TRAMUYO DE SI ESTABA O NO
     sNodo* aux = tareasPend;
     while (aux && strstr(aux->T.Descripcion, clave) == NULL)
     {
