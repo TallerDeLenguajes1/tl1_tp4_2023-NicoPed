@@ -33,14 +33,23 @@ sNodo* BuscarTareaID(sNodo * tareasPend, sNodo * tareasReal,int id);
 sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]);
 
 void mostrarTodasLasTareas(sNodo* t);
+
+void Eliminar(sNodo ** t, int id);
+
+void mostrarDatos(sNodo* lista);
+int cantidadTareas(sNodo* lista);
+int sacarTiempoAsociado(sNodo *lista);
+
+
 int main (){
     char buffer[MAX],*clave;
-    int cantTareas,duracion,respuesta,id = 0, bandera,idAux;
+    int cantTareas,duracion,respuesta,id = 0, bandera,idAux,opcionLista;
 
     sNodo* tareasRealizadas,* tareaPendientes,*tareasEnProceso; 
     sNodo* busqueda; 
     tareasRealizadas = crearListaVacio();
     tareaPendientes = crearListaVacio();
+    tareasEnProceso = crearListaVacio();
     do
     {
         printf("\n1- Agregar una tarea pendiente: ");
@@ -49,6 +58,7 @@ int main (){
         printf("\n4- Mostrar Tareas Realizadas");
         printf("\n5- Buscar por ID");
         printf("\n6- Buscar por clave");
+        printf("\n7- Mostrar Datos de una lista");
         printf("\n10- Salir");
         fflush(stdin);
         printf("\nIngrese una opcion: ");
@@ -57,6 +67,8 @@ int main (){
         switch (respuesta)
         {
         case 1 :
+            /*MODULALO OSEA HACE UN QUE TE CREE LA TAREA OTRO QUE TE CREE EL NODO Y DE AHI MANDARLO A INSERTAR OBVIAMENTE
+            NECESITAS UNA VRBLE NODO Y OTRA TAREA*/
             printf("\nIngrese una descripción para la tarea: ");
             fflush(stdin);
             gets(buffer);
@@ -78,7 +90,8 @@ int main (){
             printf("\n==========================");
             printf("\nIngrese el ID de la tarea a seleccionar: ");
             scanf("%d",&idAux);
-
+    /* para el pasaje hacer una funcion quitado que te da un nodo y ese
+    nodo pasarlo a la otra lista*/
             break;
         case 3:
             printf("\n=== Tareas Pendienetes ===");
@@ -103,7 +116,34 @@ int main (){
             clave = (char *) malloc(sizeof(char) * strlen(buffer) + 1);
             strcpy(clave,buffer);
             busqueda = BuscarTareaClave(tareaPendientes,tareasRealizadas,clave);        
-        
+            break;
+        case 7:
+            do
+            {
+            printf("\n1- Tareas Pendientes: ");
+            printf("\n2- Tareas Realizadas");
+            printf("\n3- Tareas en proceso: ");
+            printf("\nIngrese una opción");
+            scanf("%d",&opcionLista);
+            } while (opcionLista != 1 && opcionLista != 2 && opcionLista != 3);
+            switch (opcionLista)
+            {
+            case 1:
+                printf("==== PARA TAREAS PENDIENTES ====");
+                mostrarDatos(tareaPendientes);
+                break;
+            case 2:
+                printf("==== PARA TAREAS REALIZADAS ====");
+                mostrarDatos(tareasRealizadas);
+                break;
+            case 3:
+                printf("==== PARA TAREAS EN PROCESO ====");
+                mostrarDatos(tareasEnProceso);
+                break;            
+            default:
+                break;
+            }
+            break;
         }
         if (respuesta == 5 || respuesta == 6)
         {
@@ -125,6 +165,33 @@ int main (){
     return 0;
 }
 
+void mostrarDatos(sNodo* lista){
+    int cantTareas = cantidadTareas(lista);
+    int tiempoAsociado = sacarTiempoAsociado(lista);
+    printf("\n=============================");
+    printf("\nLa cantidad de tareas son: %d",cantTareas);
+    printf("\nEl tiempo Asociado es: %d",tiempoAsociado);
+    printf("\n=============================");
+
+}
+int cantidadTareas(sNodo* lista){
+    if (lista == NULL)
+    {
+        return 0;
+    }else
+    {
+        return(1 + cantidadTareas(lista->Siguiente));
+    }  
+}
+int sacarTiempoAsociado(sNodo *lista){
+    if (lista == NULL)
+    {
+        return 0;
+    }else
+    {
+        return(lista->T.Duracion + sacarTiempoAsociado(lista->Siguiente));
+    }  
+}
 void Eliminar(sNodo ** t, int id){
     sNodo* aux, *auxAnterior;
     aux = *t;
