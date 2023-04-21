@@ -21,19 +21,17 @@ typedef struct sNodo{
 }sNodo;
 
 sNodo* crearListaVacio();
-
 sNodo* crearNodo(sTAREA t);
-
 sTAREA crearTarea(int id, char* descripcion, int duracion);
 
 void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo);
 
+void mostrarTodasLasTareas(sNodo* t);
 void mostrarTarea(sTAREA t);
 
-sNodo* BuscarTareaID(sNodo * lista,int id);
 
+sNodo* BuscarTareaID(sNodo * lista,int id);
 sNodo* BuscarTareaClave(sNodo * lista, char clave[]);
-void mostrarTodasLasTareas(sNodo* t);
 
 void Eliminar(sNodo ** t, int id);
 
@@ -61,6 +59,7 @@ int main (){
         printf("\n5- Buscar por ID");
         printf("\n6- Buscar por clave");
         printf("\n7- Mostrar Datos de una lista");
+        printf("\n8-Eliminar por id (solo prueba): ");
         printf("\n10- Salir");
         fflush(stdin);
         printf("\nIngrese una opcion: ");
@@ -69,8 +68,7 @@ int main (){
         switch (respuesta)
         {
         case 1 :
-            /*MODULALO OSEA HACE UN QUE TE CREE LA TAREA OTRO QUE TE CREE EL NODO Y DE AHI MANDARLO A INSERTAR OBVIAMENTE
-            NECESITAS UNA VRBLE NODO Y OTRA TAREA*/
+
             printf("\n==========================");
             printf("\nIngrese una descripción para la tarea: ");
             fflush(stdin);
@@ -168,6 +166,12 @@ int main (){
                 break;
             }
             break;
+            case 8:
+                fflush(stdin);
+                printf("\nIngrese el id: ");
+                scanf("%d",&idAux);
+                Eliminar(&tareaPendientes,idAux);
+            break;
         }
         if (respuesta == 5 || respuesta == 6)
         {
@@ -226,26 +230,29 @@ int sacarTiempoAsociado(sNodo *lista){
     }  
 }
 void Eliminar(sNodo ** t, int id){
-    sNodo* aux, *auxAnterior;
-    aux = *t;
-    auxAnterior = *t;
+    if (*t != NULL)
+    {    
+        sNodo* aux, *auxAnterior;
+        aux = *t;
+        auxAnterior = *t;
 
-    while (aux && aux->T.TareaID != id)
-    {
-        auxAnterior = aux;
-        aux = aux->Siguiente;
-    }
-    if (aux == *t)
-    {
-        *t = aux->Siguiente;
-        free(aux->T.Descripcion);
-        free(aux);    
-    }else{
-        if (aux)
+        while (aux && aux->T.TareaID != id)
         {
-            auxAnterior->Siguiente = aux->Siguiente;
+            auxAnterior = aux;
+            aux = aux->Siguiente;
+        }
+        if (aux == *t)
+        {
+            *t = aux->Siguiente;
             free(aux->T.Descripcion);
-            free(aux);
+            free(aux);    
+        }else{
+            if (aux)
+            {
+                auxAnterior->Siguiente = aux->Siguiente;
+                free(aux->T.Descripcion);
+                free(aux);
+            }
         }
     }
 
