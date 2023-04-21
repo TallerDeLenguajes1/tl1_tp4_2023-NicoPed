@@ -31,6 +31,9 @@ sNodo* BuscarTareaID(sNodo * tareasPend, sNodo * tareasReal,int id);
 sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]);
 
 void mostrarTodasLasTareas(sNodo* t);
+
+void EliminarNodo(sNodo * Start, int Id);
+
 int main (){
     char buffer[MAX],*clave;
     int cantTareas,duracion,respuesta,id = 0, bandera,idBuscar;
@@ -67,7 +70,6 @@ int main (){
             break;
         case 2 :
             auxMostrar = tareaPendientes;
-            auxAnterior = tareaPendientes;            
             while (auxMostrar != NULL)
             {
                 printf("\n==== TAREA: %d ===",auxMostrar->T.TareaID);
@@ -81,13 +83,13 @@ int main (){
                 if (respuesta)
                 {
                     insertarNodo(&tareasRealizadas,auxMostrar->T.TareaID,auxMostrar->T.Descripcion,auxMostrar->T.Duracion);
-                    auxAnterior->Siguiente = auxMostrar->Siguiente;
-                    free(auxMostrar);
-                   
+                    auxAnterior = auxMostrar;
+                    auxMostrar = auxMostrar->Siguiente;
+                    EliminarNodo(tareaPendientes,auxAnterior->T.TareaID);                   
+                }else
+                {
+                auxMostrar = auxMostrar->Siguiente;                
                 }
-                
-                auxAnterior = auxMostrar;
-                auxMostrar = auxMostrar->Siguiente;    
                 
                 
             }
@@ -136,7 +138,21 @@ int main (){
     free(tareaPendientes);
     return 0;
 }
-
+void EliminarNodo(sNodo * Start, int Id)
+{
+    sNodo * Aux = Start;
+    sNodo * AuxAnterior = Start;
+    while (Aux && Aux->T.TareaID != Id)
+    {
+    AuxAnterior = Aux;
+    Aux = Aux->Siguiente;
+    }
+    if(Aux)
+    {
+    AuxAnterior -> Siguiente = Aux -> Siguiente;
+    free(Aux);
+    }
+}
 void mostrarTodasLasTareas(sNodo* t){
     sNodo* aux = t;
     while (aux != NULL)
