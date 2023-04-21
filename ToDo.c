@@ -22,16 +22,17 @@ typedef struct sNodo{
 
 sNodo* crearListaVacio();
 
-sNodo* crearNodo(int id, char descipcion[], int duracion);
+sNodo* crearNodo(sTAREA t);
 
-void insertarNodo(sNodo** cabecera,int id, char descipcion[], int duracion);
+sTAREA crearTarea(int id, char* descripcion, int duracion);
+
+void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo);
 
 void mostrarTarea(sTAREA t);
 
-sNodo* BuscarTareaID(sNodo * tareasPend, sNodo * tareasReal,int id);
+sNodo* BuscarTareaID(sNodo * lista,int id);
 
-sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]);
-
+sNodo* BuscarTareaClave(sNodo * lista, char clave[]);
 void mostrarTodasLasTareas(sNodo* t);
 
 void Eliminar(sNodo ** t, int id);
@@ -44,7 +45,8 @@ int sacarTiempoAsociado(sNodo *lista);
 int main (){
     char buffer[MAX],*clave;
     int cantTareas,duracion,respuesta,id = 0, bandera,idAux,opcionLista;
-
+    sTAREA nuevaTarea;
+    sNodo* nuevoNodo;
     sNodo* tareasRealizadas,* tareaPendientes,*tareasEnProceso; 
     sNodo* busqueda; 
     tareasRealizadas = crearListaVacio();
@@ -69,13 +71,18 @@ int main (){
         case 1 :
             /*MODULALO OSEA HACE UN QUE TE CREE LA TAREA OTRO QUE TE CREE EL NODO Y DE AHI MANDARLO A INSERTAR OBVIAMENTE
             NECESITAS UNA VRBLE NODO Y OTRA TAREA*/
+            printf("\n==========================");
             printf("\nIngrese una descripción para la tarea: ");
             fflush(stdin);
             gets(buffer);
             printf("\nIngrese una duracion(en minutos): ");
             fflush(stdin);
             scanf("%d",&duracion);
-            insertarNodo(&tareaPendientes, id, buffer, duracion);
+            printf("\n==========================");
+            nuevaTarea = crearTarea(id,buffer,duracion);
+            nuevoNodo= crearNodo(nuevaTarea);
+            insertarNodo(&tareaPendientes,nuevoNodo);
+            free(nuevaTarea.Descripcion);
             id ++;
             break;
         case 2 :
@@ -85,7 +92,7 @@ int main (){
             printf("\n=== Tareas Realizadas ===");
             mostrarTodasLasTareas(tareasRealizadas);
             printf("\n==========================");
-            printf("\n=== Tareas EnProceso ===");
+            printf("\n=== Tareas En Proceso ===");
             mostrarTodasLasTareas(tareasEnProceso);
             printf("\n==========================");
             printf("\nIngrese el ID de la tarea a seleccionar: ");
@@ -106,8 +113,16 @@ int main (){
         case 5:
             printf("\nIngrese el id: ");
             fflush(stdin);
-            scanf("%d",&idAux);
-            busqueda = BuscarTareaID(tareaPendientes,tareasRealizadas,idAux);
+            scanf("%d",&idAux); 
+            busqueda = BuscarTareaID(tareaPendientes,idAux);
+            if (busqueda == NULL)
+            {
+                busqueda = BuscarTareaID(tareasRealizadas,idAux);
+                if (busqueda == NULL)
+                {
+                    busqueda = BuscarTareaID(tareasEnProceso,idAux);
+                }
+            }
             break;
         case 6:
             printf("\nIngrese la clave: ");
@@ -115,7 +130,16 @@ int main (){
             gets(buffer);
             clave = (char *) malloc(sizeof(char) * strlen(buffer) + 1);
             strcpy(clave,buffer);
-            busqueda = BuscarTareaClave(tareaPendientes,tareasRealizadas,clave);        
+            busqueda = BuscarTareaClave(tareaPendientes,clave);        
+            if (busqueda == NULL)
+            {
+                busqueda = BuscarTareaClave(tareasRealizadas,clave);
+                if (busqueda == NULL)
+                {
+                    busqueda = BuscarTareaClave(tareasEnProceso,clave);
+                }
+            }
+            
             break;
         case 7:
             do
@@ -123,7 +147,7 @@ int main (){
             printf("\n1- Tareas Pendientes: ");
             printf("\n2- Tareas Realizadas");
             printf("\n3- Tareas en proceso: ");
-            printf("\nIngrese una opción");
+            printf("\nIngrese una opción: ");
             scanf("%d",&opcionLista);
             } while (opcionLista != 1 && opcionLista != 2 && opcionLista != 3);
             switch (opcionLista)
@@ -163,6 +187,15 @@ int main (){
     free(tareasRealizadas);
     free(tareaPendientes);
     return 0;
+}
+
+sTAREA crearTarea(int id, char* descripcion, int duracion){
+    sTAREA t;
+    t.Descripcion = (char *) malloc(sizeof(char)* strlen(descripcion) + 1);
+    strcpy(t.Descripcion,descripcion);
+    t.TareaID = id;
+    t.Duracion = duracion;
+    return t;
 }
 
 void mostrarDatos(sNodo* lista){
@@ -230,56 +263,39 @@ void mostrarTodasLasTareas(sNodo* t){
     
 }
 
-sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]){
+sNodo* BuscarTareaClave(sNodo * lista, char clave[]){
     // HACER QUE SOLO RECIBA UNA LISTA Y LO BUSQUE DE AHI RECIEN EN EL PROGRAMA
     //PRINCIPAL HACES EL TRAMUYO DE SI ESTABA O NO
-    sNodo* aux = tareasPend;
+    sNodo* aux = lista;
     while (aux && strstr(aux->T.Descripcion, clave) == NULL)
     {
         aux =aux->Siguiente;
     }
-    if (aux == NULL)
-    {
-        aux = tareasReal;
-        while (aux && strstr(aux->T.Descripcion, clave) == NULL)
-        {
-            aux =aux->Siguiente;
-        }
-    }
     return aux;
 }
 
-sNodo* BuscarTareaID(sNodo * tareasPend, sNodo * tareasReal,int id){
+sNodo* BuscarTareaID(sNodo * tareas, int id){
 
-        sNodo* aux = tareasPend;
+        sNodo* aux = tareas;
         while (aux != NULL && aux->T.TareaID != id)
         {
             aux = aux->Siguiente;
-        }
-        if (aux == NULL)
-        {
-            aux = tareasReal;
-            while (aux!= NULL && aux->T.TareaID != id)
-            {
-                aux = aux->Siguiente;
-            }
         }
         return aux;
 
 }
 
-void insertarNodo(sNodo** cabecera,int id, char* descipcion, int duracion){
-    sNodo* nuevoNodo = crearNodo(id,descipcion,duracion);
+void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo){
     nuevoNodo->Siguiente = *cabecera;
     *cabecera = nuevoNodo;
 }
 
-sNodo* crearNodo(int id, char descipcion[], int duracion){
+sNodo* crearNodo(sTAREA t){
     sNodo* nuevoNodo= (sNodo *) malloc(sizeof(sNodo));
-    nuevoNodo->T.Descripcion = (char *) malloc(sizeof(char) * strlen(descipcion) + 1);
-    strcpy(nuevoNodo->T.Descripcion, descipcion);
-    nuevoNodo->T.Duracion = duracion;
-    nuevoNodo->T.TareaID = id;
+    nuevoNodo->T.Descripcion = (char *) malloc(sizeof(char) * strlen(t.Descripcion) + 1);
+    strcpy(nuevoNodo->T.Descripcion, t.Descripcion);
+    nuevoNodo->T.Duracion = t.Duracion;
+    nuevoNodo->T.TareaID = t.TareaID;
     return nuevoNodo;
 }
 
