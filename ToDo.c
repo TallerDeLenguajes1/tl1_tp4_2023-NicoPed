@@ -34,6 +34,9 @@ sNodo* BuscarTareaID(sNodo * lista,int id);
 sNodo* BuscarTareaClave(sNodo * lista, char clave[]);
 
 void Eliminar(sNodo ** t, int id);
+sNodo* quitarNodo(sNodo** lista, int id);
+void eliminarNodo(sNodo * nodo);
+
 
 void mostrarDatos(sNodo* lista);
 int cantidadTareas(sNodo* lista);
@@ -42,9 +45,9 @@ int sacarTiempoAsociado(sNodo *lista);
 
 int main (){
     char buffer[MAX],*clave;
-    int cantTareas,duracion,respuesta,id = 0, bandera,idAux,opcionLista;
+    int cantTareas,duracion,respuesta,id = 0, opcionCase2,idAux,opcionLista;
     sTAREA nuevaTarea;
-    sNodo* nuevoNodo;
+    sNodo* nodoAux;
     sNodo* tareasRealizadas,* tareaPendientes,*tareasEnProceso; 
     sNodo* busqueda; 
     tareasRealizadas = crearListaVacio();
@@ -55,11 +58,12 @@ int main (){
         printf("\n1- Agregar una tarea pendiente: ");
         printf("\n2- Ver y Marcar como realizadas las tareas pendientes: ");
         printf("\n3- Mostrar Tareas Pendientes");
-        printf("\n4- Mostrar Tareas Realizadas");
-        printf("\n5- Buscar por ID");
-        printf("\n6- Buscar por clave");
-        printf("\n7- Mostrar Datos de una lista");
-        printf("\n8-Eliminar por id (solo prueba): ");
+        printf("\n4- Mostrar Tareas En proceso");
+        printf("\n5- Mostrar Tareas Realizadas");
+        printf("\n6- Buscar por ID");
+        printf("\n7- Buscar por clave");
+        printf("\n8- Mostrar Datos de una lista");
+        //printf("\n9-Eliminar por id (solo prueba): ");
         printf("\n10- Salir");
         fflush(stdin);
         printf("\nIngrese una opcion: ");
@@ -78,25 +82,103 @@ int main (){
             scanf("%d",&duracion);
             printf("\n==========================");
             nuevaTarea = crearTarea(id,buffer,duracion);
-            nuevoNodo= crearNodo(nuevaTarea);
-            insertarNodo(&tareaPendientes,nuevoNodo);
+            nodoAux= crearNodo(nuevaTarea);
+            insertarNodo(&tareaPendientes,nodoAux);
             free(nuevaTarea.Descripcion);
             id ++;
             break;
         case 2 :
-            printf("\n=== Tareas Pendienetes ===");
-            mostrarTodasLasTareas(tareaPendientes);
-            printf("\n==========================");
-            printf("\n=== Tareas Realizadas ===");
-            mostrarTodasLasTareas(tareasRealizadas);
-            printf("\n==========================");
-            printf("\n=== Tareas En Proceso ===");
-            mostrarTodasLasTareas(tareasEnProceso);
-            printf("\n==========================");
-            printf("\nIngrese el ID de la tarea a seleccionar: ");
-            scanf("%d",&idAux);
-    /* para el pasaje hacer una funcion quitado que te da un nodo y ese
-    nodo pasarlo a la otra lista*/
+            do
+            {
+                printf("\n=== Tareas Pendienetes ===");
+                mostrarTodasLasTareas(tareaPendientes);
+                printf("\n==========================");
+                printf("\n=== Tareas En Proceso ===");
+                mostrarTodasLasTareas(tareasEnProceso);
+                printf("\n==========================");
+                printf("\n=== Tareas Realizadas ===");
+                mostrarTodasLasTareas(tareasRealizadas);
+                printf("\n==========================");
+                printf("\nIngrese el ID de la tarea a seleccionar: ");
+                scanf("%d",&idAux);
+                printf("\nQue desea hacer: ");
+                
+                do
+                {
+                printf("\n1- Mover a Tareas Pendientes");
+                printf("\n2- Mover a Tareas En Proceso");
+                printf("\n3- Mover a Tareas Realizadas");
+                printf("\n4- Eliminar Tarea");
+                printf("\n5- Salir");
+                printf("\nSeleccione una opcion: ");
+                scanf("%d", &opcionCase2 );
+                busqueda = BuscarTareaID(tareaPendientes,idAux);
+                if (busqueda == NULL)
+                {
+                    busqueda = BuscarTareaID(tareasRealizadas,idAux);
+                    if (busqueda == NULL)
+                    {
+                        busqueda = BuscarTareaID(tareasEnProceso,idAux);
+                        if (busqueda == NULL)
+                        {
+                            printf("\nERROR 404 la tarea no existe.\n");
+                            opcionCase2 = 5;
+                        }
+                        else
+                        {
+                            nodoAux = quitarNodo(&tareasEnProceso,idAux);
+                        }   
+                    }
+                    else
+                    {
+                        nodoAux = quitarNodo(&tareasRealizadas,idAux);
+                    }
+                }
+                else
+                {
+                    nodoAux = quitarNodo(&tareaPendientes,idAux);
+                }
+                        
+
+                    switch (opcionCase2)
+                    {
+                    case 1:
+                        insertarNodo(&tareaPendientes,nodoAux);
+                        printf("==== DATOS TAREAS PENDIENTES ====");
+                        mostrarDatos(tareaPendientes);
+                        opcionCase2 = 5;
+                        break;
+                    case 2:
+                        insertarNodo(&tareasEnProceso,nodoAux);
+                        printf("==== DATOS TAREAS EN PROCESO ====");
+                        mostrarDatos(tareasEnProceso);
+                        opcionCase2 = 5;
+                        break;
+                    case 3:
+                        insertarNodo(&tareasRealizadas,nodoAux);
+                        printf("==== DATOS TAREAS REALIZADAS ====");
+                        mostrarDatos(tareasRealizadas);
+                        opcionCase2 = 5;
+                        break;
+                    case 4:
+                        eliminarNodo(nodoAux);
+                        opcionCase2 = 5;
+                        break;
+                    case 5: 
+                        printf("\n-------------------------------------");
+                        break;
+                    default:
+                        printf("\nIngresee una opcion correcta porfavor");
+                        break;
+                    }
+
+
+                } while (opcionCase2 != 5);
+                printf("\nDesea modificar otra tarea? 1 = SI; 0 = NO");
+                printf("\nIngrese una opcion: ");
+                scanf("%d",&opcionCase2);
+            } while (opcionCase2 != 0);
+            
             break;
         case 3:
             printf("\n=== Tareas Pendienetes ===");
@@ -104,11 +186,16 @@ int main (){
             printf("\n==========================");
             break;
         case 4:
+            printf("\n=== Tareas En Proceso ===");
+            mostrarTodasLasTareas(tareasEnProceso);
+            printf("\n==========================");
+            break;
+        case 5:
             printf("\n=== Tareas Realizadas ===");
             mostrarTodasLasTareas(tareasRealizadas);
             printf("\n==========================");
             break;
-        case 5:
+        case 6:
             printf("\nIngrese el id: ");
             fflush(stdin);
             scanf("%d",&idAux); 
@@ -122,7 +209,7 @@ int main (){
                 }
             }
             break;
-        case 6:
+        case 7:
             printf("\nIngrese la clave: ");
             fflush(stdin);
             gets(buffer);
@@ -139,7 +226,7 @@ int main (){
             }
             
             break;
-        case 7:
+        case 8:
             do
             {
             printf("\n1- Tareas Pendientes: ");
@@ -148,32 +235,30 @@ int main (){
             printf("\nIngrese una opción: ");
             scanf("%d",&opcionLista);
             } while (opcionLista != 1 && opcionLista != 2 && opcionLista != 3);
-            switch (opcionLista)
-            {
-            case 1:
-                printf("==== PARA TAREAS PENDIENTES ====");
-                mostrarDatos(tareaPendientes);
-                break;
-            case 2:
-                printf("==== PARA TAREAS REALIZADAS ====");
-                mostrarDatos(tareasRealizadas);
-                break;
-            case 3:
-                printf("==== PARA TAREAS EN PROCESO ====");
-                mostrarDatos(tareasEnProceso);
-                break;            
-            default:
-                break;
-            }
+                switch (opcionLista)
+                {
+                case 1:
+                    printf("==== PARA TAREAS PENDIENTES ====");
+                    mostrarDatos(tareaPendientes);
+                    break;
+                case 2:
+                    printf("==== PARA TAREAS REALIZADAS ====");
+                    mostrarDatos(tareasRealizadas);
+                    break;
+                case 3:
+                    printf("==== PARA TAREAS EN PROCESO ====");
+                    mostrarDatos(tareasEnProceso);
+                    break;            
+                }
             break;
-            case 8:
+           /* case 9:
                 fflush(stdin);
                 printf("\nIngrese el id: ");
                 scanf("%d",&idAux);
                 Eliminar(&tareaPendientes,idAux);
-            break;
+            break;*/
         }
-        if (respuesta == 5 || respuesta == 6)
+        if (respuesta == 6 || respuesta == 7)
         {
             if (busqueda != NULL){
                 printf("\n=== LA TAREA BUSCADA ES: ===");
@@ -191,6 +276,33 @@ int main (){
     free(tareasRealizadas);
     free(tareaPendientes);
     return 0;
+}
+
+sNodo* quitarNodo(sNodo** lista, int id){
+    sNodo * aux;
+    sNodo * auxAnterior;
+    aux = *lista;
+    auxAnterior = *lista;
+    while (aux && aux->T.TareaID != id)
+    {
+        auxAnterior = aux;
+        aux = aux->Siguiente;
+    }
+    if (aux)
+    {
+        if (aux = *lista)
+        {
+            *lista = aux->Siguiente;
+            return aux;
+        }
+        else
+        {
+            auxAnterior->Siguiente = aux->Siguiente;
+            return aux;
+        }
+        
+    }
+    
 }
 
 sTAREA crearTarea(int id, char* descripcion, int duracion){
@@ -317,4 +429,13 @@ void mostrarTarea(sTAREA t){
     puts(t.Descripcion);
     printf("Duracion: %d",t.Duracion);
 
+}
+
+void eliminarNodo(sNodo * nodo){
+    if (nodo != NULL)
+    {
+    free(nodo->T.Descripcion);
+    free(nodo);    
+    }
+    
 }
