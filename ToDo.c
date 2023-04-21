@@ -32,7 +32,7 @@ sNodo* BuscarTareaClave(sNodo * tareasPend, sNodo * tareasReal,char clave[]);
 
 void mostrarTodasLasTareas(sNodo* t);
 
-void EliminarNodo(sNodo * Start, int Id);
+void EliminarNodo(sNodo ** Start, int Id);
 
 int main (){
     char buffer[MAX],*clave;
@@ -85,7 +85,7 @@ int main (){
                     insertarNodo(&tareasRealizadas,auxMostrar->T.TareaID,auxMostrar->T.Descripcion,auxMostrar->T.Duracion);
                     auxAnterior = auxMostrar;
                     auxMostrar = auxMostrar->Siguiente;
-                    EliminarNodo(tareaPendientes,auxAnterior->T.TareaID);                   
+                    EliminarNodo(&tareaPendientes,auxAnterior->T.TareaID);                   
                 }else
                 {
                 auxMostrar = auxMostrar->Siguiente;                
@@ -138,20 +138,32 @@ int main (){
     free(tareaPendientes);
     return 0;
 }
-void EliminarNodo(sNodo * Start, int Id)
+void EliminarNodo(sNodo ** Start, int Id)
 {
-    sNodo * Aux = Start;
-    sNodo * AuxAnterior = Start;
-    while (Aux && Aux->T.TareaID != Id)
-    {
-    AuxAnterior = Aux;
-    Aux = Aux->Siguiente;
+    if (*Start != NULL)
+    {   
+        sNodo * Aux = *Start;
+        sNodo * AuxAnterior = *Start;
+        while (Aux && Aux->T.TareaID != Id)
+        {
+        AuxAnterior = Aux;
+        Aux = Aux->Siguiente;
+        }
+        if (Aux = *Start)
+        {
+            *Start = Aux->Siguiente;
+        }else
+        {
+            if(Aux)
+            {
+            AuxAnterior -> Siguiente = Aux -> Siguiente;
+            free(Aux->T.Descripcion);
+            free(Aux);
+            }    
+        }
     }
-    if(Aux)
-    {
-    AuxAnterior -> Siguiente = Aux -> Siguiente;
-    free(Aux);
-    }
+    
+    
 }
 void mostrarTodasLasTareas(sNodo* t){
     sNodo* aux = t;
