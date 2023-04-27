@@ -25,6 +25,7 @@ sNodo* crearNodo(sTAREA t);
 sTAREA crearTarea(int id, char* descripcion, int duracion);
 
 void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo);
+void insertarNodoAlFinal(sNodo ** cabecera, sNodo * nuevoNodo);
 
 void mostrarTodasLasTareas(sNodo* t);
 void mostrarTarea(sTAREA t);
@@ -36,7 +37,7 @@ sNodo* BuscarTareaClave(sNodo * lista, char clave[]);
 void Eliminar(sNodo ** t, int id);
 sNodo* quitarNodo(sNodo** lista, int id);
 void eliminarNodo(sNodo * nodo);
-
+sNodo* quitarUltimo(sNodo ** cabecera);
 
 void mostrarDatos(sNodo* lista);
 int cantidadTareas(sNodo* lista);
@@ -63,6 +64,8 @@ int main (){
         printf("\n6- Buscar por ID");
         printf("\n7- Buscar por clave");
         printf("\n8- Mostrar Datos de una lista");
+        printf("\n9- Quitar ultima Tarea: ");
+        //printf("\n9- Agregar una tarea al final");
         //printf("\n9-Eliminar por id (solo prueba): ");
         printf("\n10- Salir");
         fflush(stdin);
@@ -251,6 +254,37 @@ int main (){
                     break;            
                 }
             break;
+            case 9:
+                nodoAux = quitarUltimo(&tareaPendientes);
+                if (nodoAux != NULL)
+                {
+                    printf("\n=========== LA TAREA QUITADA ES ============");
+                    mostrarTarea(nodoAux->T);
+                    printf("\n============================================");
+                    free(nodoAux->T.Descripcion);
+                    free(nodoAux);
+                }else
+                {
+                    printf("\nLa lista esta vacìa picaron");
+                }
+                
+                break;
+           /* case 9:
+                printf("\n==========================");
+                printf("\nIngrese una descripción para la tarea: ");
+                fflush(stdin);
+                gets(buffer);
+                printf("\nIngrese una duracion(en minutos): ");
+                fflush(stdin);
+                scanf("%d",&duracion);
+                printf("\n==========================");
+                nuevaTarea = crearTarea(id,buffer,duracion);
+                nodoAux= crearNodo(nuevaTarea);
+                insertarNodoAlFinal(&tareaPendientes,nodoAux);
+                free(nuevaTarea.Descripcion);
+                id ++;
+                break;
+            */
            /* case 9:
                 fflush(stdin);
                 printf("\nIngrese el id: ");
@@ -436,6 +470,56 @@ void eliminarNodo(sNodo * nodo){
     {
     free(nodo->T.Descripcion);
     free(nodo);    
+    }
+    
+}
+
+void insertarNodoAlFinal(sNodo ** cabecera, sNodo * nuevoNodo){
+    sNodo *aux;
+    aux = *cabecera;
+    //auxAnterior = *cabecera;
+    
+    if (aux == NULL)
+    {
+        nuevoNodo->Siguiente = *cabecera;
+        *cabecera = nuevoNodo;
+    }else
+    {
+        while (aux->Siguiente != NULL)
+        {
+            aux = aux->Siguiente;
+        }
+        aux->Siguiente = nuevoNodo;
+        nuevoNodo->Siguiente = NULL;
+    }
+        
+}
+sNodo* quitarUltimo(sNodo ** cabecera){
+    if (*cabecera != NULL)
+    {
+        sNodo *aux, *auxAnterior;
+        aux =*cabecera;
+        auxAnterior = *cabecera;
+        while (aux->Siguiente)
+        {
+            auxAnterior = aux;
+            aux = aux->Siguiente;
+        }
+        if ( *cabecera == aux )
+        {
+            //(*cabecera)->Siguiente = NULL;
+            *cabecera = NULL;
+        }
+        else
+        {    
+        auxAnterior->Siguiente = aux->Siguiente;
+        }
+        aux->Siguiente = NULL;
+        return aux;
+        
+    }else
+    {
+        return NULL;
     }
     
 }
