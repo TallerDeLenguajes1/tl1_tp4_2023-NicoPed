@@ -32,6 +32,7 @@ void mostrarTarea(sTAREA t);
 
 sNodo* BuscarTareaID(sNodo * lista,int id);
 sNodo* BuscarTareaClave(sNodo * lista, char clave[]);
+sNodo* buscarPorPocicion(sNodo * lista, int posicionBuscada);
 
 void Eliminar(sNodo ** t, int id);
 sNodo* quitarNodo(sNodo** lista, int id);
@@ -277,6 +278,38 @@ int main (){
     free(tareaPendientes);
     return 0;
 }
+sNodo* quitarPrimero(sNodo ** lista){
+    if (*lista)
+    {
+        sNodo*quitado = (*lista);
+        (*lista) = (*lista)->Siguiente;
+        quitado->Siguiente = NULL;
+        return quitado;    
+    }
+    return NULL;
+}
+
+sNodo* quitarUltimo(sNodo **lista){
+    if (*lista)
+    {
+        sNodo *aux = (*lista);
+        sNodo *auxAnterior = (*lista);
+        while (aux->Siguiente)
+        {   
+            auxAnterior = aux;
+            aux= aux->Siguiente;
+        }
+        if (aux == (*lista))
+        {
+            (*lista) = (*lista)->Siguiente;
+        }
+        else{
+            auxAnterior->Siguiente = NULL;
+        }
+        return aux;
+    }
+    return NULL;
+}
 
 sNodo* quitarNodo(sNodo** lista, int id){
     sNodo * aux;
@@ -304,6 +337,18 @@ sNodo* quitarNodo(sNodo** lista, int id){
     }
     
 }
+sNodo* buscarPorPocicion(sNodo * lista, int posicionBuscada){
+    sNodo* aux = lista;
+    int cont= 0;
+    while (aux && cont != posicionBuscada)
+    {
+        aux = aux->Siguiente;
+        cont ++;
+    }
+    return aux;
+    
+}
+
 
 sTAREA crearTarea(int id, char* descripcion, int duracion){
     sTAREA t;
