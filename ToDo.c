@@ -257,23 +257,7 @@ int main (){
                     break;            
                 }
             break;
-        case 9: 
-            printf("\n==========================");
-            printf("\nIngrese una descripción para la tarea: ");
-            fflush(stdin);
-            gets(buffer);
-            printf("\nIngrese una duracion(en minutos): ");
-            fflush(stdin);
-            scanf("%d",&duracion);
-            printf("\n==========================");
-            nuevaTarea = crearTarea(id,buffer,duracion);
-            nodoAux= crearNodo(nuevaTarea);
-            printf("\nIngrese La posicion :");
-            scanf("%d",&posicion);
-            insertarEnUnaPosiconDada(&tareaPendientes,nodoAux,posicion);
-            free(nuevaTarea.Descripcion);
-            id ++;
-            break;    
+      
         }
         if (respuesta == 6 || respuesta == 7)
         {
@@ -289,9 +273,11 @@ int main (){
         }
         
     } while (respuesta != 10);
-    
-    free(tareasRealizadas);
-    free(tareaPendientes);
+    liberarMemoria(tareasRealizadas);
+    liberarMemoria(tareaPendientes);
+    liberarMemoria(tareasEnProceso);
+    //free(tareasRealizadas);
+    //free(tareaPendientes);
     return 0;
 }
 
@@ -551,6 +537,29 @@ void insertarEnUnaPosiconDada(sNodo ** cabecera, sNodo* nuevoNodo, int posicion)
             }
         }
 }
+
+sNodo* copiarNodo(sNodo* nodoACopiar){
+    if (nodoACopiar)
+    {    
+        sNodo* nuevoNodo;
+        sTAREA nuevaTarea;
+        nuevaTarea = crearTarea(nodoACopiar->T.TareaID,nodoACopiar->T.Descripcion,nodoACopiar->T.Duracion);
+        nuevoNodo = crearNodo(nuevaTarea);
+        return nuevoNodo;
+    }
+}
+
+sNodo* copiarNodoPuntero(sNodo nodoAcopiar){
+    if (&nodoAcopiar)
+    {    
+    sNodo* nuevoNodo;
+    *nuevoNodo = nodoAcopiar;
+    nuevoNodo->Siguiente = NULL;
+    mostrarTarea(nuevoNodo->T);
+    return nuevoNodo;
+    }
+}
+
 /*case 9:
                 nodoAux = quitarUltimo(&tareaPendientes);
                 if (nodoAux != NULL)
@@ -588,3 +597,21 @@ void insertarEnUnaPosiconDada(sNodo ** cabecera, sNodo* nuevoNodo, int posicion)
                 scanf("%d",&idAux);
                 Eliminar(&tareaPendientes,idAux);
             break;*/
+            /*  case 9: 
+            printf("\n==========================");
+            printf("\nIngrese una descripción para la tarea: ");
+            fflush(stdin);
+            gets(buffer);
+            printf("\nIngrese una duracion(en minutos): ");
+            fflush(stdin);
+            scanf("%d",&duracion);
+            printf("\n==========================");
+            nuevaTarea = crearTarea(id,buffer,duracion);
+            nodoAux= crearNodo(nuevaTarea);
+            printf("\nIngrese La posicion :");
+            scanf("%d",&posicion);
+            insertarEnUnaPosiconDada(&tareaPendientes,nodoAux,posicion);
+            free(nuevaTarea.Descripcion);
+            id ++;
+            break;    
+        */
