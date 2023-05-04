@@ -1,9 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
 //TP5
-
 #define MAX 150
 
 typedef struct Tarea
@@ -26,6 +24,7 @@ sTAREA crearTarea(int id, char* descripcion, int duracion);
 
 void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo);
 void insertarNodoAlFinal(sNodo ** cabecera, sNodo * nuevoNodo);
+void insertarEnUnaPosiconDada(sNodo ** cabecera, sNodo* nuevoNodo);
 
 void mostrarTodasLasTareas(sNodo* t);
 void mostrarTarea(sTAREA t);
@@ -37,8 +36,10 @@ sNodo* buscarPorPocicion(sNodo * lista, int posicionBuscada);
 
 void Eliminar(sNodo ** t, int id);
 sNodo* quitarNodo(sNodo** lista, int id);
-void eliminarNodo(sNodo * nodo);
 sNodo* quitarUltimo(sNodo ** cabecera);
+
+void liberarMemoria(sNodo * lista);
+void eliminarNodo(sNodo * nodo);
 
 void mostrarDatos(sNodo* lista);
 int cantidadTareas(sNodo* lista);
@@ -312,113 +313,25 @@ int main (){
     free(tareaPendientes);
     return 0;
 }
-sNodo* quitarPrimero(sNodo ** lista){
-    if (*lista)
-    {
-        sNodo*quitado = (*lista);
-        (*lista) = (*lista)->Siguiente;
-        quitado->Siguiente = NULL;
-        return quitado;    
-    }
-    return NULL;
-}
 
-sNodo* quitarUltimo(sNodo **lista){
-    if (*lista)
-    {
-        sNodo *aux = (*lista);
-        sNodo *auxAnterior = (*lista);
-        while (aux->Siguiente)
-        {   
-            auxAnterior = aux;
-            aux= aux->Siguiente;
-        }
-        if (aux == (*lista))
-        {
-            (*lista) = (*lista)->Siguiente;
-        }
-        else{
-            auxAnterior->Siguiente = NULL;
-        }
-        return aux;
-    }
-    return NULL;
-}
 
-sNodo* quitarNodo(sNodo** lista, int id){
-    sNodo * aux;
-    sNodo * auxAnterior;
-    aux = *lista;
-    auxAnterior = *lista;
-    while (aux && aux->T.TareaID != id)
-    {
-        auxAnterior = aux;
-        aux = aux->Siguiente;
-    }
-    if (aux)
-    {
-        if (aux = *lista)
-        {
-            *lista = aux->Siguiente;
-            return aux;
-        }
-        else
-        {
-            auxAnterior->Siguiente = aux->Siguiente;
-            return aux;
-        }
-        
-    }
-    
-}
-sNodo* buscarPorPocicion(sNodo * lista, int posicionBuscada){
+void liberarMemoria(sNodo * lista){
     sNodo* aux = lista;
-    int cont= 0;
-    while (aux && cont != posicionBuscada)
+    sNodo* aux2;
+    while (aux)
     {
+        aux2 = aux;
         aux = aux->Siguiente;
-        cont ++;
+        eliminarNodo(aux2);
     }
-    return aux;
+}
+void eliminarNodo(sNodo * nodo){
+    if (nodo != NULL)
+    {
+    free(nodo->T.Descripcion);
+    free(nodo);    
+    }
     
-}
-
-
-sTAREA crearTarea(int id, char* descripcion, int duracion){
-    sTAREA t;
-    t.Descripcion = (char *) malloc(sizeof(char)* strlen(descripcion) + 1);
-    strcpy(t.Descripcion,descripcion);
-    t.TareaID = id;
-    t.Duracion = duracion;
-    return t;
-}
-
-void mostrarDatos(sNodo* lista){
-    int cantTareas = cantidadTareas(lista);
-    int tiempoAsociado = sacarTiempoAsociado(lista);
-    printf("\n=============================");
-    printf("\nLa cantidad de tareas son: %d",cantTareas);
-    printf("\nEl tiempo Asociado es: %d",tiempoAsociado);
-    printf("\n=============================");
-
-}
-int cantidadTareas(sNodo* lista){
-    if (lista == NULL)
-    {
-        return 0;
-    }else
-    {
-        return(1 + cantidadTareas(lista->Siguiente));
-    }  
-}
-int sacarTiempoAsociado(sNodo *lista){
-    if (lista == NULL)
-    {
-        return 0;
-    }else
-    {
-        return(lista->T.Duracion + sacarTiempoAsociado(lista->Siguiente));
-    }  
 }
 void Eliminar(sNodo ** t, int id){
     if (*t != NULL)
@@ -448,6 +361,72 @@ void Eliminar(sNodo ** t, int id){
     }
 
 }
+sNodo* quitarPrimero(sNodo ** lista){
+    if (*lista)
+    {
+        sNodo*quitado = (*lista);
+        (*lista) = (*lista)->Siguiente;
+        quitado->Siguiente = NULL;
+        return quitado;    
+    }
+    return NULL;
+}
+sNodo* quitarUltimo(sNodo **lista){
+    if (*lista)
+    {
+        sNodo *aux = (*lista);
+        sNodo *auxAnterior = (*lista);
+        while (aux->Siguiente)
+        {   
+            auxAnterior = aux;
+            aux= aux->Siguiente;
+        }
+        if (aux == (*lista))
+        {
+            (*lista) = (*lista)->Siguiente;
+        }
+        else{
+            auxAnterior->Siguiente = aux->Siguiente;
+        }
+        return aux;
+    }
+    return NULL;
+}
+sNodo* quitarNodo(sNodo** lista, int id){
+    sNodo * aux;
+    sNodo * auxAnterior;
+    aux = *lista;
+    auxAnterior = *lista;
+    while (aux && aux->T.TareaID != id)
+    {
+        auxAnterior = aux;
+        aux = aux->Siguiente;
+    }
+    if (aux)
+    {
+        if (aux = *lista)
+        {
+            *lista = aux->Siguiente;
+            return aux;
+        }
+        else
+        {
+            auxAnterior->Siguiente = aux->Siguiente;
+            return aux;
+        }
+        
+    }
+    
+}
+
+sTAREA crearTarea(int id, char* descripcion, int duracion){
+    sTAREA t;
+    t.Descripcion = (char *) malloc(sizeof(char)* strlen(descripcion) + 1);
+    strcpy(t.Descripcion,descripcion);
+    t.TareaID = id;
+    t.Duracion = duracion;
+    return t;
+}
 
 void mostrarTodasLasTareas(sNodo* t){
     sNodo* aux = t;
@@ -460,6 +439,41 @@ void mostrarTodasLasTareas(sNodo* t){
     }
     
 }
+void mostrarTarea(sTAREA t){
+
+    printf("\nID : %d", t.TareaID);
+    printf("\nDescripción: ");
+    puts(t.Descripcion);
+    printf("Duracion: %d",t.Duracion);
+
+}
+void mostrarDatos(sNodo* lista){
+    int cantTareas = cantidadTareas(lista);
+    int tiempoAsociado = sacarTiempoAsociado(lista);
+    printf("\n=============================");
+    printf("\nLa cantidad de tareas son: %d",cantTareas);
+    printf("\nEl tiempo Asociado es: %d",tiempoAsociado);
+    printf("\n=============================");
+
+}
+int cantidadTareas(sNodo* lista){
+    if (lista == NULL)
+    {
+        return 0;
+    }else
+    {
+        return(1 + cantidadTareas(lista->Siguiente));
+    }  
+}
+int sacarTiempoAsociado(sNodo *lista){
+    if (lista == NULL)
+    {
+        return 0;
+    }else
+    {
+        return(lista->T.Duracion + sacarTiempoAsociado(lista->Siguiente));
+    }  
+}
 
 sNodo* BuscarTareaClave(sNodo * lista, char clave[]){
     // HACER QUE SOLO RECIBA UNA LISTA Y LO BUSQUE DE AHI RECIEN EN EL PROGRAMA
@@ -471,7 +485,6 @@ sNodo* BuscarTareaClave(sNodo * lista, char clave[]){
     }
     return aux;
 }
-
 sNodo* BuscarTareaID(sNodo * tareas, int id){
 
         sNodo* aux = tareas;
@@ -482,10 +495,16 @@ sNodo* BuscarTareaID(sNodo * tareas, int id){
         return aux;
 
 }
-
-void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo){
-    nuevoNodo->Siguiente = *cabecera;
-    *cabecera = nuevoNodo;
+sNodo* buscarPorPocicion(sNodo * lista, int posicionBuscada){
+    sNodo* aux = lista;
+    int cont= 0;
+    while (aux && cont != posicionBuscada)
+    {
+        aux = aux->Siguiente;
+        cont ++;
+    }
+    return aux;
+    
 }
 
 sNodo* crearNodo(sTAREA t){
@@ -496,29 +515,14 @@ sNodo* crearNodo(sTAREA t){
     nuevoNodo->T.TareaID = t.TareaID;
     return nuevoNodo;
 }
-
 sNodo* crearListaVacio(){
     return NULL;
 }
 
-void mostrarTarea(sTAREA t){
-
-    printf("\nID : %d", t.TareaID);
-    printf("\nDescripción: ");
-    puts(t.Descripcion);
-    printf("Duracion: %d",t.Duracion);
-
+void insertarNodo(sNodo** cabecera,sNodo* nuevoNodo){
+    nuevoNodo->Siguiente = *cabecera;
+    *cabecera = nuevoNodo;
 }
-
-void eliminarNodo(sNodo * nodo){
-    if (nodo != NULL)
-    {
-    free(nodo->T.Descripcion);
-    free(nodo);    
-    }
-    
-}
-
 void insertarNodoAlFinal(sNodo ** cabecera, sNodo * nuevoNodo){
     sNodo *aux;
     aux = *cabecera;
@@ -539,32 +543,6 @@ void insertarNodoAlFinal(sNodo ** cabecera, sNodo * nuevoNodo){
     }
         
 }
-sNodo* quitarUltimo(sNodo ** cabecera){
-    if (*cabecera != NULL)
-    {
-        sNodo *aux, *auxAnterior;
-        aux =*cabecera;
-        auxAnterior = *cabecera;
-        while (aux->Siguiente)
-        {
-            auxAnterior = aux;
-            aux = aux->Siguiente;
-        }
-        if ( *cabecera == aux )
-        {
-            //(*cabecera)->Siguiente = NULL;
-            *cabecera = NULL;
-        }
-        else
-        {    
-        auxAnterior->Siguiente = aux->Siguiente;
-        }
-        aux->Siguiente = NULL;
-        return aux;
-        
-    }else
-    {
-        return NULL;
-    }
+void insertarEnUnaPosiconDada(sNodo ** cabecera, sNodo* nuevoNodo){
     
 }
